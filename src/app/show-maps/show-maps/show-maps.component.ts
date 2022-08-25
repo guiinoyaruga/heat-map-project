@@ -51,12 +51,12 @@ export class ShowMapsComponent implements OnInit {
 
         let teste = JSON.parse(localStorage.getItem('locations') || '{}');
 
-        let data = [];
+        // let data = [];
 
-        for (let i = 0; i <teste.length; i++) {
-          data[i] = new google.maps.LatLng(teste[i][0], teste[i][1])
-          console.log(data[i]);
-        }
+        // for (let i = 0; i <teste.length; i++) {
+        //   data[i] = new google.maps.LatLng(teste[i][0], teste[i][1])
+        //   console.log(data[i]);
+        // }
 
         // let just = this.lat.'map((key: any) => ({
         //   [key]: this.heatmapData[key],
