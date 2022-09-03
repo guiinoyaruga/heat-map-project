@@ -1,24 +1,64 @@
 import { Injectable } from '@angular/core';
 import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MapService {
   constructor(private http: HttpClient, private handler: HttpBackend) {
-    this.http = new HttpClient(handler)
+    this.http = new HttpClient(handler);
   }
-  URL_API =
-    'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=1&data_inicio=2022-08-18&data_fim=2022-08-18&tipo=1&pedido_status=FINISHED';
 
-  showOrders(): Observable<any> {
-    return this.http.get(`${this.URL_API}`, {
-      headers: new HttpHeaders({
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjU2MzIsImlhdCI6MTY2MDk0MDA1M30._qWPLwGCg01bvySd8420EQyfUL4tlIutKsjLpIhYeJk ',
-      }),
-      
-    });
+  async showOrders(
+    page: any = '1',
+    lastPage: any = '3'
+  ): Promise<Observable<any>> {
+
+    let pages = [];
+
+    for (page; page <= lastPage; page++) {
+      pages.push(
+        this.http.get(
+          'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
+            page +
+            '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
+          {
+            headers: new HttpHeaders({
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
+            }),
+          }
+        )
+      );
+    }
+     return forkJoin(pages);
+
+    // return this.http.get(
+    //       'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
+    //         page +
+    //         '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
+    //       {
+    //         headers: new HttpHeaders({
+    //           Authorization:
+    //             'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
+    //         }),
+    //       }
+    //     ).pipe(map((value:any)=>{
+    //           pages = value;
+    //           return pages
+    //     }))
+    // return this.http.get(
+    //   'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
+    //     page +
+    //     '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
+    //   {
+    //     headers: new HttpHeaders({
+    //       Authorization:
+    //         'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
+    //     }),
+    //   }
+    // )
   }
 }

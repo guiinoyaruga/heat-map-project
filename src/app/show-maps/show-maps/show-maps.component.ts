@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { of } from 'rxjs';
 import { MapService } from 'src/app/map.service';
+
 @Component({
   selector: 'app-show-maps',
   templateUrl: './show-maps.component.html',
@@ -35,34 +37,32 @@ export class ShowMapsComponent implements OnInit {
       map: this.map,
       //icon: = change the shape of marker
     });
-
-    this.heatmap = new google.maps.visualization.HeatmapLayer({
-      data: this.heatmapData,
-    });
-    this.heatmap.setMap(this.map);
   }
 
-  showOrders() {
-    this.mapService.showOrders().subscribe({
-      next: (locations) => {
-        this.heatmapData = locations.data;
+  async showOrders() {
+    (await this.mapService.showOrders()).subscribe({
+      next: async (locations) => {
+        this.heatmapData = locations;
+        console.log(locations);
+        //console.log(this.heatmapData)
 
-        localStorage.setItem('locations', JSON.stringify(this.heatmapData));
+        let data = [];
 
-        let teste = JSON.parse(localStorage.getItem('locations') || '{}');
+        for (let i = 0; i < this.heatmapData.length; i++) {
+          for (let j = 0; j < this.heatmapData[i].data.length; j++) {
+          data[i] = new google.maps.LatLng(
+            this.heatmapData[i].data[j].latitude,
+            this.heatmapData[i].data[j].longitude
+          );
+          console.log(this.heatmapData[i].data[j].latitude);
+          console.log(this.heatmapData[i].data[j].longitude);
+        }
+      }
 
-        // let data = [];
-
-        // for (let i = 0; i <teste.length; i++) {
-        //   data[i] = new google.maps.LatLng(teste[i][0], teste[i][1])
-        //   console.log(data[i]);
-        // }
-
-        // let just = this.lat.'map((key: any) => ({
-        //   [key]: this.heatmapData[key],
-        // }));
-        // console.log(just);
-        console.log(JSON.parse(localStorage.getItem('locations') || '{}'));
+        this.heatmap = new google.maps.visualization.HeatmapLayer({
+          data: data,
+        });
+        this.heatmap.setMap(this.map);
       },
       error: (err) => {
         console.log('Erro ao buscar', err);
