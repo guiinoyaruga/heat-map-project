@@ -35,30 +35,5 @@ export class MapService {
     }
      return forkJoin(pages);
 
-    // return this.http.get(
-    //       'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
-    //         page +
-    //         '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
-    //       {
-    //         headers: new HttpHeaders({
-    //           Authorization:
-    //             'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
-    //         }),
-    //       }
-    //     ).pipe(map((value:any)=>{
-    //           pages = value;
-    //           return pages
-    //     }))
-    // return this.http.get(
-    //   'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
-    //     page +
-    //     '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
-    //   {
-    //     headers: new HttpHeaders({
-    //       Authorization:
-    //         'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
-    //     }),
-    //   }
-    // )
   }
 }
