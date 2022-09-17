@@ -1,39 +1,72 @@
 import { Injectable } from '@angular/core';
-import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MapService {
-  constructor(private http: HttpClient, private handler: HttpBackend) {
-    this.http = new HttpClient(handler);
+  data: any;
+
+  constructor(private http: HttpClient) {}
+
+  async dateFilter(dtInicio: any, dtFim: any) {
+    this.data = { inicio: dtInicio, fim: dtFim };
   }
 
-  async showOrders(
-    page: any = '1',
-    lastPage: any = '3'
-  ): Promise<Observable<any>> {
+  receiveData() {
+    return this.http
+      .get(
+        'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=1&data_inicio=' +
+          this.data.inicio +
+          '&data_fim=' +
+          this.data.fim +
+          '&tipo=1&pedido_status=FINISHED',
+        {
+          headers: new HttpHeaders({
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjM0MTkzMzJ9.WYZF-hFo6AV2RTLABqL5cjijUk0DrMMs1HRdvDR-bcA',
+          }),
+        }
+      )
+      .toPromise();
+  }
 
-    let pages = [];
+  async lastPageSaved() {
+    let result: any = await this.receiveData();
+    //console.log(result);
+    return result.lastPage;
+  }
+
+  async showOrders(lastPage: any) {
+    let page = 1;
+    let dataModified: any = [];
+
+    //console.log(lastPage);
 
     for (page; page <= lastPage; page++) {
-      pages.push(
-        this.http.get(
+      let dataReceived: any = await this.http
+        .get(
           'https://report.yooga.com.br/delivery/relatorio?inverse=true&page=' +
             page +
-            '&data_inicio=2022-08-01&data_fim=2022-08-25&tipo=1&pedido_status=FINISHED',
+            '&data_inicio=' +
+            this.data.inicio +
+            '&data_fim=' +
+            this.data.fim +
+            '&tipo=1&pedido_status=FINISHED',
           {
             headers: new HttpHeaders({
               Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjE0Njk1Nzh9.zo2ZgM1ObQqus50QT4NdZlhlO7TO-Rzs89NXKenc9aY',
+                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjM0MTkzMzJ9.WYZF-hFo6AV2RTLABqL5cjijUk0DrMMs1HRdvDR-bcA',
             }),
           }
         )
-      );
+        .toPromise();
+      dataReceived.data.forEach((elem: any) => {
+        dataModified.push(elem);
+      });
     }
-     return forkJoin(pages);
-
+    //console.log(this.data.inicio, this.data.fim);
+    //console.log(dataModified);
+    return dataModified;
   }
 }

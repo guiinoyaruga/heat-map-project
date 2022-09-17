@@ -1,5 +1,21 @@
 <div>
   <h1>Mapa de Calor</h1>
 </div>
-
 <div id="map"></div>
+
+<div>
+  <br />
+  <form align="center">
+    <label>
+      <span>Início:</span>
+    </label>
+    <input type="date" name="inicio" [(ngModel)]="inicio" />
+    <label>
+      <span> Fim:</span>
+    </label>
+    <input type="date" name="fim" [(ngModel)]="fim" />
+    <button type="button" (click)="getButtonFunctions()">
+      Filtrar
+    </button>
+  </form>
+</div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { of } from 'rxjs';
+
 import { MapService } from 'src/app/map.service';
 
 @Component({
@@ -10,19 +10,21 @@ import { MapService } from 'src/app/map.service';
 export class ShowMapsComponent implements OnInit {
   map!: google.maps.Map;
   myLatLng: any;
-  heatmap: any;
-  heatmapData: any = [];
+  heatMap: any;
+  heatMapData: any = [];
+  inicio: any;
+  fim: any;
+  date: any;
 
-  constructor(private mapService: MapService) {}
+  constructor(public mapService: MapService) {}
 
   ngOnInit(): void {
     this.showMap();
-    this.showOrders();
   }
 
   //show lat and long
   showMap() {
-    (this.myLatLng = new google.maps.LatLng(-20.2976178, -40.2957768)),
+    (this.myLatLng = new google.maps.LatLng(-20.3441877, -40.2915922)),
       (this.map = new google.maps.Map(
         document.getElementById('map') as HTMLElement,
         {
@@ -39,34 +41,59 @@ export class ShowMapsComponent implements OnInit {
     });
   }
 
+  async getDateMap() {
+    if (this.inicio <= this.fim) {
+      this.date = await this.mapService.dateFilter(this.inicio, this.fim);
+    } else if (this.inicio > this.fim) {
+      alert('Data incial maior que data final, verifique novamente');
+    } else if (!this.inicio && !this.fim) {
+      alert('Digite uma data ínicio e fim');
+    }
+  }
+  //get twice functions by button click
+  async getButtonFunctions() {
+    await this.getDateMap();
+    await this.showOrders();
+  }
+
+  clearMap() {
+    this.heatMap.setMap(null);
+  }
+
   async showOrders() {
-    (await this.mapService.showOrders()).subscribe({
-      next: async (locations) => {
-        this.heatmapData = locations;
-        console.log(locations);
+    let lastPage = await this.mapService.lastPageSaved();
+    // check the data map
+    if (!!this.heatMap && !!this.heatMap.setMap) {
+      this.clearMap();
+    } else {
+      console.log('Erro ao limpar mapa!');
+    }
+
+    await this.mapService
+      .showOrders(lastPage)
+      .then((locations) => {
+        this.heatMapData = locations;
+        //console.log(locations);
         //console.log(this.heatmapData)
 
-        let data = [];
+        let dataByService = [];
 
-        for (let i = 0; i < this.heatmapData.length; i++) {
-          for (let j = 0; j < this.heatmapData[i].data.length; j++) {
-          data[i] = new google.maps.LatLng(
-            this.heatmapData[i].data[j].latitude,
-            this.heatmapData[i].data[j].longitude
+        for (let i = 0; i < this.heatMapData.length; i++) {
+          dataByService[i] = new google.maps.LatLng(
+            this.heatMapData[i].latitude,
+            this.heatMapData[i].longitude
           );
-          console.log(this.heatmapData[i].data[j].latitude);
-          console.log(this.heatmapData[i].data[j].longitude);
+          //console.log(this.heatMapData[i].latitude);
+          //console.log(this.heatMapData[i].longitude);
         }
-      }
 
-        this.heatmap = new google.maps.visualization.HeatmapLayer({
-          data: data,
+        this.heatMap = new google.maps.visualization.HeatmapLayer({
+          data: dataByService,
+          radius: 25,
         });
-        this.heatmap.setMap(this.map);
-      },
-      error: (err) => {
-        console.log('Erro ao buscar', err);
-      },
-    });
+
+        this.heatMap.setMap(this.map);
+      })
+      .catch((err) => console.log('Erro ao buscar', err));
   }
 }
