@@ -24,7 +24,7 @@ export class MapService {
         {
           headers: new HttpHeaders({
             Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjM0MTkzMzJ9.WYZF-hFo6AV2RTLABqL5cjijUk0DrMMs1HRdvDR-bcA',
+              'Bearer',
           }),
         }
       )
@@ -56,7 +56,7 @@ export class MapService {
           {
             headers: new HttpHeaders({
               Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjE1ODQ0LCJpYXQiOjE2NjM0MTkzMzJ9.WYZF-hFo6AV2RTLABqL5cjijUk0DrMMs1HRdvDR-bcA',
+                'Bearer',
             }),
           }
         )
